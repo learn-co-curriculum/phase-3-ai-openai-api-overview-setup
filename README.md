@@ -133,21 +133,23 @@ Now open up the `ai.py` file and paste in the following code:
 
 ```python
 import os
-import openai
+from openai import OpenAI
 from dotenv import load_dotenv, find_dotenv
 
 _ = load_dotenv(find_dotenv())
 
-openai.api_key = os.environ["OPENAI_API_KEY"]
+client = OpenAI(
+api_key=os.environ['OPENAI_API_KEY']
+)
 
 messages = [{"role": "user", "content": "What is the capital of New York?"}]
+
 try:
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=messages,
         temperature=0,
     )
-
     print(response.choices[0].message["content"])
 except Exception as e:
     print(e)
@@ -163,12 +165,16 @@ pipenv shell
 python ai.py
 ```
 
-This should give the following output:
+There is no longer free tier access to the OpenAI API so you will receive the following message:
+
+```bash
+Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+```
+If your account had sufficient tokens for this request, this would give the following output:
 
 ```bash
 The capital of New York is Albany.
 ```
-
 Now you have a working environment for using the OpenAI API! We will explore how
 to use this API in the next lesson.
 
@@ -188,9 +194,6 @@ with the 4k context shows the following pricing:
 
 [This video on tokenization](https://youtu.be/sXbDXE_uD2s) will help you
 understand how language models parse text.
-
-Your free trial should give you enough token allowance to explore the API and
-make a few hundred requests.
 
 If you decide to add your credit card for a usage based account, make sure to
 **also set up usage limits to avoid racking up unforeseen charges**. Visit the
